@@ -35,17 +35,52 @@ Cargamos librerías necesarias.
 library(readxl)
 library(writexl)
 library(dplyr)
-
+library(stringr)
 ```
 
 COMENZAMOS CON EL DATAFRAME
 
 ```{r}
 carpeta_cert <- "certificados"
+
 todos_ficheros <- list.files(carpeta_cert, recursive = TRUE, full.names = TRUE)
 fichero_puntos <- list.files(carpeta_cert, pattern = "puntos.*\\.txt", 
                            recursive = TRUE, full.names = TRUE, ignore.case = TRUE)
 fichero_certificados <- list.files(carpeta_cert, recursive = TRUE, full.names = TRUE, pattern = "certificate.*\\pdf")
 
+apellidos_vec <- c()
+puntos_vec    <- c()
+nomfile_vec   <- c()
+contenido_vec <- c()
+
+for (ruta in fichero_puntos) {
+  
+  #Dividir la ruta por "/"
+  trozos <- strsplit(ruta, "/")[[1]]
+  
+  #grep devuelve la posición donde aparece esa palabra
+  pos_alumno     <- grep("assignsubmission", trozos)
+  trozo_alumno   <- trozos[pos_alumno]
+  #Dividimos por _ y nos quedamos únicamente con el nombre del alumno
+  nombre_completo <- strsplit(trozo_alumno, "_")[[1]][1]
+  
+  #Separamos por espacio para tener solo los apellidos y quitar el nombre 
+  palabras  <- strsplit(nombre_completo, " ")[[1]]
+  apellidos <- paste(palabras[-length(palabras)], collapse = " ")
+  
+  nom_file <- basename(ruta)
+  
+  #ReadLines para leer lo que hay dentro del fichero
+  contenido <- readLines(ruta)
+  contenido <- paste(contenido, collapse = " ")
+  #Puntos(solo valores númericos)
+  puntuacion <- as.numeric(gsub("[^0-9]", "", contenido))
+
+  
+  apellidos_vec <- c(apellidos_vec, apellidos)
+  puntos_vec    <- c(puntos_vec,    puntuacion)
+  nomfile_vec   <- c(nomfile_vec,   nom_file)
+  contenido_vec <- c(contenido_vec, contenido)
+}
 
 ```
