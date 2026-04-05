@@ -83,4 +83,15 @@ for (ruta in fichero_puntos) {
   contenido_vec <- c(contenido_vec, contenido)
 }
 
+#Creamos el dataframe y lo organzamos por orden de apellidos
+evalua_df <- data.frame(
+  apellidos = apellidos_vec,
+  puntos    = puntos_vec,
+  NomFile   = nomfile_vec,
+  Puntos    = contenido_vec
+)
+evalua_df <- evalua_df[order(evalua_df$apellidos), ]
+evalua_df
+write_xlsx(evalua_df, "NotasRIntermedio.xlsx")
+
 ```
