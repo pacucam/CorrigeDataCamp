@@ -67,7 +67,7 @@ for (ruta in fichero_puntos) {
   #Separamos por espacio para tener solo los apellidos y quitar el nombre 
   palabras  <- strsplit(nombre_completo, " ")[[1]]
   apellidos <- paste(palabras[-length(palabras)], collapse = " ")
-  
+  apellidos <- gsub(",", "", apellidos)
   nom_file <- basename(ruta)
   
   #ReadLines para leer lo que hay dentro del fichero
@@ -93,5 +93,11 @@ evalua_df <- data.frame(
 evalua_df <- evalua_df[order(evalua_df$apellidos), ]
 evalua_df
 write_xlsx(evalua_df, "NotasRIntermedio.xlsx")
+
+#Archivo AlumnosNotas
+
+names(evalua_df)[1] <- "Apellido(s)"
+alumnos_notas <- left_join(alumnos_df, evalua_df, by = "Apellido(s)")
+write_xlsx(alumnos_notas, "AlumnosNotas.xlsx")
 
 ```
